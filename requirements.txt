@@ -1,0 +1,2 @@
+requests>=2.31.0
+# No additional dependencies required - all other modules are part of Python standard library
