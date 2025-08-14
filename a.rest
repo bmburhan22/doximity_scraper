@@ -1,6 +1,6 @@
 POST https://graphql.doximity.com/graphql HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer doxat_EHftxXbx9MRXwD7zr9Yps1N2vO6T0x3eTuGKbnDhfvqxIkJfs6ygvgrM7JSwrLHLFciIhQ6i1Y9QNN4wLBvq2_0KNer5
+Authorization: Bearer 
 
 
 {

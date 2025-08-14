@@ -152,7 +152,7 @@ SPECIALTY_CODES = [
     "RXS00", # Pharmacy Student
     "RNAX00" # CRNA Student
 ]
-BEARER_TOKEN = "doxat_EHftxXbx9MRXwD7zr9Yps1N2vO6T0x3eTuGKbnDhfvqxIkJfs6ygvgrM7JSwrLHLFciIhQ6i1Y9QNN4wLBvq2_0KNer5"  # Replace with your actual token
+BEARER_TOKEN = ""  # Replace with your actual token
 
 class DoximityScraper:
     def __init__(self):
