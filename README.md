@@ -1,140 +1,143 @@
 # Doximity Scraper
 
-A configurable Python scraper for extracting user data from Doximity's GraphQL API based on specialty codes.
+A comprehensive web scraper for Doximity profiles that automatically collects detailed information about healthcare professionals across all medical specialties.
 
 ## Features
 
-- **Configurable**: Easy to modify settings via `config.py`
-- **Multi-specialty support**: Scrape multiple specialty codes in one run
-- **Pagination handling**: Automatically handles all pages of results
-- **Multiple output formats**: CSV, JSON, or both
-- **Comprehensive logging**: Console and file logging with configurable levels
-- **Rate limiting**: Respectful API usage with configurable delays
-- **Error handling**: Graceful error handling and recovery
-- **Field filtering**: Option to extract only specific data fields
-- **Comprehensive GraphQL query**: Uses the full Doximity API schema with all available fields and filter options
+### Automatic Detailed Profile Scraping
+- **No prompts or options** - runs automatically
+- **Address Information**: Practice and personal addresses with full details
+- **Phone Numbers**: Mobile, home, office, and practice phone numbers
+- **Education**: Academic background and degrees
+- **Training**: Medical training and residency information
+- **Certifications**: Professional certifications and credentials
+- **Licenses**: State medical licenses and status
 
-## Setup
+## Data Fields Collected
 
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Detailed Profile Data
+#### Addresses
+- Address line 1 & 2
+- City, state, country, ZIP code
+- Practice name (if applicable)
+- Primary address indicator
+- GPS coordinates
 
-2. **Configure the scraper**:
-   - Copy `sample.config.py` to `config.py`
-   - Edit `config.py` with your settings:
-     - Add your Doximity bearer token
-     - Configure specialty codes to scrape
-     - Set output preferences
-     - Adjust rate limiting and other options
+#### Phone Numbers
+- Mobile phone
+- Home phone
+- Office phone
+- Practice phone numbers
+- Phone extensions
+- Fax numbers
 
-3. **Run the scraper**:
-   ```bash
-   # Option 1: Run directly
-   python doximity_scraper.py
-   
-   # Option 2: Use the runner script
-   python run_scraper.py
-   ```
+#### Professional Information
+- **Education**: Institution, degree, field of study, dates
+- **Training**: Institution, specialty, start/end dates, type
+- **Certifications**: Name, issuing organization, dates, credential ID
+- **Licenses**: State, license number, issue/expiration dates, status
 
-## Configuration Options
+## Installation
 
-### DOXIMITY_CONFIG
-- `bearer_token`: Your Doximity API authentication token
-- `base_url`: GraphQL API endpoint
-- `request_delay`: Seconds between API requests (rate limiting)
-- `users_per_page`: Number of users per page (max 100)
-- `max_pages`: Safety limit for pagination
-
-### SPECIALTY_CODES
-List of specialty codes to scrape. Examples:
-- `"AN00"` - Anesthesiology
-- `"NC00"` - Oncology
-- `"IM00"` - Internal Medicine
-- `"SU00"` - Surgery
-- `"PE00"` - Pediatrics
-
-### OUTPUT_CONFIG
-- `output_dir`: Directory for output files
-- `output_format`: "csv", "json", or "both"
-- `include_timestamp`: Add timestamps to filenames
-- CSV and JSON specific options
-
-### LOGGING_CONFIG
-- `level`: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `log_to_file`: Enable/disable file logging
-- `log_file`: Log file path
-- `format`: Log message format
-
-### EXTRACT_FIELDS
-Optional list of specific fields to extract. If empty, all available fields are extracted.
-
-### FILTERS
-Optional additional filters like state, city, or credentials.
-
-## Usage Examples
-
-### Basic Usage
-```python
-# config.py
-SPECIALTY_CODES = ["AN00", "NC00"]
-OUTPUT_CONFIG["output_format"] = "both"
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd doximity_scraper
 ```
 
-### Field Filtering
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Set your bearer token in `doximity_scraper.py`:
 ```python
-# config.py
-EXTRACT_FIELDS = [
-    "id",
-    "fullName", 
-    "specialtyName",
-    "cityName",
-    "stateAbbreviation"
+BEARER_TOKEN = "your_actual_token_here"
+```
+
+4. Configure specialty codes (currently only "AM00" is active):
+```python
+SPECIALTY_CODES = [
+    "AM00",  # Allergy & Immunology
+    # "AN00",  # Anesthesiology (commented out)
+    # "CA00",  # Cardiology (commented out)
+    # ... add more as needed
 ]
 ```
 
-### Location Filtering
-```python
-# config.py
-FILTERS = {
-    "statePostalCodeFilter": "CA",
-    "locationNameFilter": "Los Angeles"
-}
+## Usage
+
+### Simple Run
+Just run the scraper and it will automatically process all active specialty codes:
+
+```bash
+python doximity_scraper.py
 ```
 
-## Output
+The scraper will:
+1. Process each specialty code in the list
+2. Collect up to 50 detailed profiles per specialty
+3. Save detailed profiles to JSON files
+4. Save structured data summaries to CSV files
+5. Show progress for each specialty
 
-The scraper creates:
-- `output/` directory for all files
-- CSV files: `{SPECIALTY_CODE}_users{timestamp}.csv`
-- JSON files: `{SPECIALTY_CODE}_users{timestamp}.json`
-- Log file: `output/scraper.log`
+### Output Files
+
+For each specialty code, you'll get:
+- `{specialty_code}_detailed_profiles.json` - Full detailed profiles with all data
+- `{specialty_code}_structured_data.csv` - Summary with counts and JSON-encoded detailed data
+
+## GraphQL Queries Used
+
+The scraper uses three main GraphQL queries:
+
+1. **Profile Sections Query**: Extracts education, training, certifications, and licenses
+2. **Private Lines Query**: Gets private contact information (phone numbers, emails)
+3. **Locations Query**: Retrieves address and practice location information
 
 ## Rate Limiting
 
-The scraper includes configurable rate limiting to be respectful to Doximity's API. Default is 0.5 seconds between requests.
+- 2 second delay between detailed profile requests
+- Adjustable in the code if needed
 
 ## Error Handling
 
 - Graceful handling of API errors
-- Continues processing other specialty codes if one fails
-- Comprehensive logging of all operations
-- Safety limits to prevent infinite loops
+- Continues processing on individual profile failures
+- Saves partial results
+- Shows progress for each specialty
 
-## Security
+## Specialties Supported
 
-- Bearer token is stored in `config.py` (keep this file secure)
-- Never commit `config.py` to version control
-- Use `sample.config.py` as a template
+The scraper supports all major medical specialties. Currently active:
+- **AM00** - Allergy & Immunology
+
+To enable more specialties, uncomment the desired codes in the `SPECIALTY_CODES` list.
+
+## Notes
+
+- Requires valid Doximity bearer token for authentication
+- Respects API rate limits to avoid being blocked
+- Data quality depends on profile completeness
+- Some profiles may have limited information available
+- Limit of 50 profiles per specialty to avoid overwhelming the API
 
 ## Troubleshooting
 
-1. **Authentication errors**: Check your bearer token in `config.py`
-2. **Rate limiting**: Increase `request_delay` in configuration
-3. **Missing data**: Check `EXTRACT_FIELDS` configuration
-4. **API errors**: Review log files for detailed error messages
+### Common Issues
+1. **Authentication Error**: Check your bearer token is valid
+2. **Rate Limiting**: Increase delays between requests in the code
+3. **Empty Results**: Verify specialty codes are correct
+4. **API Errors**: Check Doximity's API status
+
+## Legal and Ethical Considerations
+
+- Respect Doximity's terms of service
+- Use data responsibly and ethically
+- Consider privacy implications
+- Comply with applicable data protection laws
+- Use for legitimate research purposes only
 
 ## License
 
-This project is for educational purposes. Please respect Doximity's terms of service and API usage guidelines.
+This project is for educational and research purposes. Please ensure compliance with Doximity's terms of service and applicable laws.
